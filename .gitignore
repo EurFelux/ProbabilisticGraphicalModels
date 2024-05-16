@@ -1,0 +1,6 @@
+.vscode
+*private.md
+*.csv
+*.xlsx
+*.py
+*.ipynb
