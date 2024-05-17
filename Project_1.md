@@ -20,10 +20,7 @@
 Global distribution:
 
 $$
-\begin{align*}
-P(A,S,E,O,R,T)=&P(A)\cdot P(E)\cdot P(E|A,S) \cdot P(O|E)\cdot\\
-&P(R|E)\cdot P(T|O,R)
-\end{align*}
+P(A,S,E,O,R,T)
 $$
 
 $$
@@ -42,7 +39,23 @@ $$
 
 ### c, d, e
 
-See `Project_1.R`.
+See `Project_1_ex1.R`.
+
+### f
+
+1. $(A\perp S)$, $(S\perp A)$
+2. $(O\perp R, A, S | E)$
+3. $(R\perp O, A, S | E)$
+4. $(T\perp A, S, E | O, R)$
+
+$$
+\begin{align*}
+P(A,S,E,O,R,T)=
+&P(A)\cdot P(E)\cdot P(E|A,S) \cdot P(O|E)\cdot\\
+&P(R|E)\cdot P(T|O,R)
+\end{align*}
+$$
 
 ## Exercise 2
 
+See `Project_1_ex2.R`.
