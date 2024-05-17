@@ -1,6 +1,6 @@
 ---
-title: "Project 1"
-author: "Wang Jiyuan"
+title: "Project 1: Discrete Bayesian networks in RStudio"
+author: "王纪元 Wang Jiyuan"
 date: "2024/05/17"
 ---
 
@@ -8,7 +8,7 @@ date: "2024/05/17"
 
 ### a
 
-![DAG Image](./assets/Project_1_01.jpg)
+![DAG](./assets/Project_1_01.jpg)
 
 | Node | Parent(s)   | Child(ren)  |
 | ---- | ----------- | ----------- |
@@ -34,11 +34,11 @@ $$
 Local distribution:
 
 $$
-\begin{align*}
+\begin{aligned}
 P_L=&(3-1)+(2-1)+(2-1)(3\times 2)+(2-1)\cdot 2\\
 &+(2-1)\cdot 2+(3-1)(2\times 2)\\
 =&21
-\end{align*}
+\end{aligned}
 $$
 
 ### c
@@ -218,11 +218,11 @@ print(p3)
 4. $(T\perp A, S, E | O, R)$
 
 $$
-\begin{align*}
+\begin{aligned}
 P(A,S,E,O,R,T)=
 &P(A)\cdot P(E)\cdot P(E|A,S) \cdot P(O|E)\cdot\\
 &P(R|E)\cdot P(T|O,R)
-\end{align*}
+\end{aligned}
 $$
 
 ## Exercise 2
@@ -545,3 +545,7 @@ get_nparams <- function(nodes, levels, arcs) {
 print(paste("Parameters of the local distributions of the BN: ", 
             get_nparams(nodes, levels, arcs)))
 ```
+
+## Conclusions
+
+This project took me approximately 10 hours to complete. I have learned how to create a Bayesian network in R, calculate the CPTs, and visualize the DAG. I have also learned how to fit the data into the Bayesian network and visualize the CPTs. I have also learned how to calculate the number of parameters in the local distributions of the Bayesian network.
