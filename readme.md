@@ -13,5 +13,4 @@ You can also use RStudio, but I do not guarantee the usability of the code. I ha
 
 1. Uncomment all the code in the `install_requirements.R`.
 2. Run `Rscript install_requirements.R`
-3. See `Project_1.rmd`.
-
+3. See `Project_x.rmd` or `Project_x.html` for the solution.
