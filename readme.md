@@ -1,4 +1,10 @@
-# PGW
+# Probabilistic Graphical Models
+
+## Environment
+
+- Visual Studio Code
+  - R Extension
+- Pandoc (to render r-markdown)
 
 ## Project 1: Naive Bayesian Network
 
@@ -39,4 +45,8 @@ E-->O;
 E-->R;
 O-->T;R-->T;
 ```
+
+### Exercises Solution
+
+See `Project_1.rmd`.
 
