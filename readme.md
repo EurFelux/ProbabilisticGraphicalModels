@@ -11,6 +11,6 @@ You can also use RStudio, but I do not guarantee the usability of the code. I ha
 
 ## Exercises Solution
 
-1. Uncomment all the code in the `install_requirements.R`.
-2. Run `Rscript install_requirements.R`
+1. Run `Rscript install_requirements.R`.
+2. Place `survey.xlsx` and `global_distribution.txt` into the root folder.
 3. See `Project_x.rmd` for the solution.

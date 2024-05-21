@@ -4,6 +4,7 @@ archived
 *private.md
 *.csv
 *.xlsx
+*.txt
 *.py
 *.ipynb
 test.*

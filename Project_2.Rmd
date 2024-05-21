@@ -1,0 +1,271 @@
+---
+title: "Project 1: Discrete Bayesian networks in RStudio"
+author: "王纪元 Wang Jiyuan"
+date: "2024/05/21"
+---
+
+## Exercise 1
+
+```{r}
+# distGlobal <- read.delim(file.choose(), header = TRUE)
+distGlobal <- read.delim("global_distribution.txt", header = TRUE)
+
+print(distGlobal)
+```
+
+```{r}
+print(class(distGlobal))
+
+print(class(distGlobal$D))
+
+print(class(distGlobal$I))
+
+print(class(distGlobal$G))
+
+print(class(distGlobal$S))
+
+print(class(distGlobal$L))
+
+print(class(distGlobal$probability))
+```
+
+## Exercise 2
+
+```{r}
+# Input parameters:
+#   2 character type vectors, A and B, which will represent both sets.
+
+# Output Parameters:
+#   A boolean value, isSubset, which will be TRUE if A is a strict subset of
+#   B (A ⊂ B); or FALSE if A is not strict subset of B.
+IsSubset <- function(A, B) {
+  isSubset <- all(A %in% B) && length(A) < length(B)
+  return(isSubset)
+}
+
+# Test the function
+A <- c("a", "b", "c")
+B <- c("a", "b", "c", "d")
+
+print(IsSubset(A, B))
+
+A <- c("A", "b", "c")
+B <- c("a", "b", "c", "d")
+
+print(IsSubset(A, B))
+
+A <- c("a", "b", "c", "d")
+B <- c("a", "b", "c", "d")
+
+print(IsSubset(A, B))
+
+A <- character(0)
+B <- c("a", "b", "c", "d")
+
+print(IsSubset(A, B))
+```
+
+## Exercise 3
+
+```{r}
+# Load the required libraries
+library(rlist)
+library(dplyr)
+```
+
+`IsCondIndependent`, which will constitute the main core of the minimal Imap 
+algorithm. This function should be able to verify 2 types of conditional
+independencies within a global distribution P.
+
+Input Parameters:
+
+- **P**: Data frame of the global distribution P (with the format of
+distGlobal: probabilities in the last column).
+- **X**: Name of the variable X within the distribution P.
+- **Y**: Character type vector Y, with variable names Y1, . . ., Ym within distribution P.
+- **Z**: Vector of character type Z, with variable names Z1, . . ., Zl
+
+within distribution P. If the vector Z is the empty set (character(0)),
+IsCondIndependent will only check if (X ⊥ Y). If the vector Z is
+not the empty set, IsCondIndependent will only check if (X ⊥ Y | Z).
+
+Output Parameters:
+
+A boolean value, independent, which will be
+TRUE if in the distribution P it is satisfied that (X ⊥ Y | Z) (or X ⊥ Y,
+if Z = character(0)); or it will be FALSE if in the distribution P it is
+not satisfied that (X ⊥ Y | Z) (or X ⊥ Y, if Z = character(0)).
+
+```{r}
+IsCondIndependent <- function(P, X, Y, Z) {
+  # Initialize
+  independent <- TRUE
+
+  get_levels <- function(X) {
+    X_index <- match(X, colnames(P))
+    X_factor <- as.factor(P[, X_index])
+    X_levels <- levels(X_factor)
+    return(X_levels)
+  }
+
+
+  levels_ <- list()
+  levels_ <- list.append(levels_, get_levels(X))
+
+  for (i in seq_along(Y)) {
+    levels_ <- list.append(levels_, get_levels(Y[i]))
+  }
+
+  for (i in seq_along(Z)) {
+    levels_ <- list.append(levels_, get_levels(Z[i]))
+  }
+
+  # print(levels_)
+
+  combinations <- expand.grid(levels_, stringsAsFactors = FALSE)
+
+  # print(combinations)
+
+  for (i in seq_len(dim(combinations)[1])) {
+    if (length(Z) == 0) {
+      # X ⊥ Y
+      vectorXY <- combinations[i, ]
+      vectorX <- vectorXY[1]
+      vectorY <- vectorXY[2:length(vectorXY)]
+
+      probXY <- 0
+      probX <- 0
+      probY <- 0
+
+      for (j in seq_len(dim(P)[1])) {
+        rowP <- P[j, ]
+        prob <- rowP[length(rowP)]
+        if (IsSubset(vectorXY, rowP)) {
+          probXY <- probXY + prob
+        }
+        if (IsSubset(vectorX, rowP)) {
+          probX <- probX + prob
+        }
+        if (IsSubset(vectorY, rowP)) {
+          probY <- probY + prob
+        }
+        if (!near(probXY, probX * probY)) {
+          independent <- FALSE
+          break
+        }
+      }
+
+      if (!independent) {
+        break
+      }
+    } else {
+      # X ⊥ Y | Z
+      vectorXYZ <- combinations[i, ]
+      vectorX <- vectorXYZ[1]
+      vectorY <- vectorXYZ[2:(length(vectorXYZ) - length(Z))]
+      vectorZ <- vectorXYZ[(length(vectorXYZ) - length(Z) + 1):length(vectorXYZ)]
+
+      probXYZ <- 0
+      probXZ <- 0
+      probYZ <- 0
+      probZ <- 0
+
+      for (j in seq_len(dim(P)[1])) {
+        rowP <- P[j, ]
+        prob <- rowP[length(rowP)]
+        if (IsSubset(vectorXYZ, rowP)) {
+          probXYZ <- probXYZ + prob
+        }
+        if (IsSubset(vectorX, rowP) && IsSubset(vectorZ, rowP)) {
+          probXZ <- probXZ + prob
+        }
+        if (IsSubset(vectorY, rowP) && IsSubset(vectorZ, rowP)) {
+          probYZ <- probYZ + prob
+        }
+        if (IsSubset(vectorZ, rowP)) {
+          probZ <- probZ + prob
+        }
+        if (!near(probXYZ * probZ, probXZ * probYZ)) {
+          independent <- FALSE
+          break
+        }
+      }
+
+      if (!independent) {
+        break
+      }
+    }
+  }
+  return(independent)
+}
+```
+
+The function returns `TRUE` in the following conditional independencies:
+
+- (D ⊥ I)
+- (D ⊥ S)
+- (G ⊥ S | I, D)
+- (S ⊥ D | I)
+- (I ⊥ L | G, S)
+- (D ⊥ L, S | I, G)
+
+The function returns `FALSE` in the following conditional independencies:
+
+- (G ⊥ L)
+- (G ⊥ S)
+- (S ⊥ L)
+- (S ⊥ L, D, G)
+- (I ⊥ S | G, L)
+- (I ⊥ G | S, L)
+
+```{r}
+# Test the function
+if (IsCondIndependent(distGlobal, "D", c("I"), character(0)) != TRUE) {
+  print("Test failed for (D ⊥ I)")
+}
+
+if (IsCondIndependent(distGlobal, "D", c("S"), character(0)) != TRUE) {
+  print("Test failed for (D ⊥ S)")
+}
+
+if (IsCondIndependent(distGlobal, "G", c("S"), c("I", "D")) != TRUE) {
+  print("Test failed for (G ⊥ S | I, D)")
+}
+
+if (IsCondIndependent(distGlobal, "S", c("D"), c("I")) != TRUE) {
+  print("Test failed for (S ⊥ D | I)")
+}
+
+if (IsCondIndependent(distGlobal, "I", c("L"), c("G", "S")) != TRUE) {
+  print("Test failed for (I ⊥ L | G, S)")
+}
+
+if (IsCondIndependent(distGlobal, "D", c("L", "S"), c("I", "G")) != TRUE) {
+  print("Test failed for (D ⊥ L, S | I, G)")
+}
+
+if (IsCondIndependent(distGlobal, "G", c("L"), character(0)) != FALSE) {
+  print("Test failed for (G ⊥ L)")
+}
+
+if (IsCondIndependent(distGlobal, "G", c("S"), character(0)) != FALSE) {
+  print("Test failed for (G ⊥ S)")
+}
+
+if (IsCondIndependent(distGlobal, "S", c("L"), character(0)) != FALSE) {
+  print("Test failed for (S ⊥ L)")
+}
+
+if (IsCondIndependent(distGlobal, "S", c("L", "D", "G"), character(0)) != FALSE) {
+  print("Test failed for (S ⊥ L, D, G)")
+}
+
+if (IsCondIndependent(distGlobal, "I", c("S"), c("G", "L")) != FALSE) {
+  print("Test failed for (I ⊥ S | G, L)")
+}
+
+if (IsCondIndependent(distGlobal, "I", c("G"), c("S", "L")) != FALSE) {
+  print("Test failed for (I ⊥ G | S, L)")
+}
+```
+
