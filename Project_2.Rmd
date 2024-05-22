@@ -133,6 +133,13 @@ IsCondIndependent <- function(P, X, Y, Z) {
       vectorX <- vectorXY[1]
       vectorY <- vectorXY[2:length(vectorXY)]
 
+      # print("vectorXY:")
+      # print(vectorXY)
+      # print("vectorX:")
+      # print(vectorX)
+      # print("vectorY:")
+      # print(vectorY)
+
       probXY <- 0
       probX <- 0
       probY <- 0
@@ -140,6 +147,10 @@ IsCondIndependent <- function(P, X, Y, Z) {
       for (j in seq_len(dim(P)[1])) {
         rowP <- P[j, ]
         prob <- rowP[length(rowP)]
+        # print("rowP:")
+        # print(rowP)
+        # print("prob:")
+        # print(prob)
         if (IsSubset(vectorXY, rowP)) {
           probXY <- probXY + prob
         }
@@ -149,13 +160,9 @@ IsCondIndependent <- function(P, X, Y, Z) {
         if (IsSubset(vectorY, rowP)) {
           probY <- probY + prob
         }
-        if (!near(probXY, probX * probY)) {
-          independent <- FALSE
-          break
-        }
       }
-
-      if (!independent) {
+      if (!near(probXY, probX * probY)) {
+        independent <- FALSE
         break
       }
     } else {
@@ -185,13 +192,9 @@ IsCondIndependent <- function(P, X, Y, Z) {
         if (IsSubset(vectorZ, rowP)) {
           probZ <- probZ + prob
         }
-        if (!near(probXYZ * probZ, probXZ * probYZ)) {
-          independent <- FALSE
-          break
-        }
       }
-
-      if (!independent) {
+      if (!near(probXYZ * probZ, probXZ * probYZ)) {
+        independent <- FALSE
         break
       }
     }
@@ -269,3 +272,83 @@ if (IsCondIndependent(distGlobal, "I", c("G"), c("S", "L")) != FALSE) {
 }
 ```
 
+## Exercise 4
+
+```{r}
+library(DescTools)
+library(Rgraphviz)
+library(bnlearn)
+```
+
+```{r}
+# This function will make use of the functions already developed: IsSubset and 
+# IsCondIndependent.
+
+# Input Parameters:
+# • P:Data frame of the global distribution P (with the format of
+# distGlobal: probabilities in the last column).
+# • Xord: Vector of type character that will contain all the variables
+# of P in a certain order: X1, X2, . . . , Xn.
+
+# Output Parameters:
+# A minimal I-map G (associated to P and Xord). G shall be a list consisting of
+# 2 elements:
+# 1. A character type vector, variables, which will simply be equal
+# to Xord.
+# 2. A character type array, arcs, which will hold the relationships
+# between the Xord variables detected by the algorithm. Each row
+# of arcs will have a relationship of the form A → B. Therefore,
+# arcs will have 2 columns: first column for the parent variable of
+# the relationship (A) and second column for the child variable of
+# the relationship (B).
+MinimalIMap <- function(P, Xord) {
+  n <- length(Xord)
+  vectorArcs <- c()
+
+  for (i in 2:n) {
+    U <- Xord[1:(i - 1)]
+    for (j in (i - 1):0) {
+      matrixUfirst <- CombSet(U, j)
+      for (k in seq_len(dim(matrixUfirst)[1])) {
+        Ufirst <- matrixUfirst[k, ]
+        Dif <- setdiff(U, Ufirst)
+        if (IsSubset(Ufirst, U)) {
+          if (IsCondIndependent(P, Xord[i], Dif, Ufirst)) {
+            U <- Ufirst
+          }
+        }
+      }
+      if (length(U) >= 1) {
+        # print(U)
+        for (j in seq_along(U)) {
+          relationship <- c(U[j], Xord[i])
+          vectorArcs <- c(vectorArcs, relationship)
+        }
+      }
+    }
+  }
+  arcs <- matrix(vectorArcs, ncol = 2, byrow = TRUE)
+  G <- list(variables = Xord, arcs = arcs)
+  return(G)
+}
+```
+
+```{r}
+
+# If all went well, run MinimalIMap with P = distGlobal, testing 3 variable
+# orders: Xord = c("D", "I", "S", "G", "L"), Xord = c("L", "S", "G",
+# "I", "D") and Xord = c("L", "D", "S", "I", "G").
+
+testcase <- function(Xord) {
+  G <- MinimalIMap(distGlobal, Xord)
+  dag <- empty.graph(G$variables)
+  arcs(dag) <- G$arcs
+  graphviz.plot(dag)
+}
+
+testcase(c("D", "I", "S", "G", "L"))
+
+testcase(c("L", "S", "G", "I", "D"))
+
+testcase(c("L", "D", "S", "I", "G"))
+```

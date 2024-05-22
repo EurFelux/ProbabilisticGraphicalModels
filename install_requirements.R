@@ -10,3 +10,4 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 BiocManager::install("Rgraphviz")
 
 install.packages("rlist")
+install.packages("DescTools")
