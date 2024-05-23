@@ -548,4 +548,8 @@ print(paste("Parameters of the local distributions of the BN: ",
 
 ## Conclusions
 
-This project took me approximately 10 hours to complete. I have learned how to create a Bayesian network in R, calculate the CPTs, and visualize the DAG. I have also learned how to fit the data into the Bayesian network and visualize the CPTs. I have also learned how to calculate the number of parameters in the local distributions of the Bayesian network.
+This project took me approximately 10 hours to complete. I have learned how to 
+create a Bayesian network in R, calculate the CPTs, and visualize the DAG. I 
+have also learned how to fit the data into the Bayesian network and visualize 
+the CPTs. I have also learned how to calculate the number of parameters in the 
+local distributions of the Bayesian network.

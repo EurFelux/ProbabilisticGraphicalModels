@@ -1,7 +1,7 @@
 ---
-title: "Project 1: Discrete Bayesian networks in RStudio"
+title: "Project 2: A minimal I-map algorithm"
 author: "王纪元 Wang Jiyuan"
-date: "2024/05/21"
+date: "2024/05/23"
 ---
 
 ## Exercise 1
@@ -311,19 +311,19 @@ MinimalIMap <- function(P, Xord) {
       matrixUfirst <- CombSet(U, j)
       for (k in seq_len(dim(matrixUfirst)[1])) {
         Ufirst <- matrixUfirst[k, ]
-        Dif <- setdiff(U, Ufirst)
+        Dif <- setdiff(Xord[1:(i - 1)], Ufirst)
         if (IsSubset(Ufirst, U)) {
           if (IsCondIndependent(P, Xord[i], Dif, Ufirst)) {
             U <- Ufirst
           }
         }
       }
-      if (length(U) >= 1) {
-        # print(U)
-        for (j in seq_along(U)) {
-          relationship <- c(U[j], Xord[i])
-          vectorArcs <- c(vectorArcs, relationship)
-        }
+    }
+    if (length(U) >= 1) {
+      # print(U)
+      for (j in seq_along(U)) {
+        relationship <- c(U[j], Xord[i])
+        vectorArcs <- c(vectorArcs, relationship)
       }
     }
   }
@@ -352,3 +352,16 @@ testcase(c("L", "S", "G", "I", "D"))
 
 testcase(c("L", "D", "S", "I", "G"))
 ```
+
+## Conclusions
+
+This project took me approximately 4 hours to complete. I learned how to
+implement function `IsSubset` to verify if a set is a strict subset of another
+set, and function `IsCondIndependent` to verify conditional independencies
+within a global distribution P. I also learned how to implement a minimal I-map 
+algorithm using the functions `IsSubset` and `IsCondIndependent`. I tested the
+algorithm with the global distribution `distGlobal` and 3 variable orders. The
+algorithm successfully detected the relationships between the variables in the
+global distribution.
+
+

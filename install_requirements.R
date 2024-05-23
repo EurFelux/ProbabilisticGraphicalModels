@@ -11,3 +11,6 @@ BiocManager::install("Rgraphviz")
 
 install.packages("rlist")
 install.packages("DescTools")
+
+# You may need to update this package, but I'm not sure.
+install.packages("fastmap")
